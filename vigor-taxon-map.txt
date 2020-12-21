@@ -1,0 +1,16 @@
+flua_db	Influenza A Virus	11320
+flub_db	Influenza B Virus	11520
+fluc_db	Influenza C Virus	11552
+lassa_db	Lassa Mammarenavirus	11620
+rsv_db	Respiratory Syncytial Virus	1868215
+rtva_db	Rotavirus A	28875
+rtvb_db	Rotavirus B	28876
+rtvc_db	Rotavirus C	36427
+rtvf_db	Rotavirus F	183405
+rtvg_db	Rotavirus G	183407
+sapo_db	Sapovirus	95341
+sarscov2_db	SARSCoV2	2697049
+veev_db	Alphaviruses	11019
+wnvII_db	West Nile Virus Lineage II	2421440
+wnvI_db	West Nile Virus Lineage I	2421439
+zikv_db	Zika Virus	64320

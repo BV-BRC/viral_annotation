@@ -13,8 +13,8 @@ use Getopt::Long::Descriptive;
 use File::Copy;
 use IPC::Run qw(run);
 use File::SearchPath qw(searchpath);
-use Bio::KBase::GenomeAnnotation::Config qw(vigor_reference_db_directory);
-use Bio::P3::GenomeAnnotationApp::VigorTaxonMap;
+use Bio::BVBRC::ViralAnnotation::Config qw(vigor_reference_db_directory);
+use Bio::BVBRC::ViralAnnotation::VigorTaxonMap;
 use P3DataAPI;
 
 use Cwd;
@@ -66,7 +66,7 @@ if (!$reference_name)
 	{
 	    my $taxon = $ids->[$i];
 	    my $name = $names->[$i];
-	    my $db = $Bio::P3::GenomeAnnotationApp::VigorTaxonMap::map->{$taxon};
+	    my $db = $Bio::BVBRC::ViralAnnotation::VigorTaxonMap::map->{$taxon};
 	    if ($db)
 	    {
 		$reference_name = $db->{db};

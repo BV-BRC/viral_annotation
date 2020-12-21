@@ -25,20 +25,24 @@ TPAGE_ARGS = --define kb_top=$(TARGET) --define kb_runtime=$(DEPLOY_RUNTIME) --d
 	--define kb_service_port=$(SERVICE_PORT) --define kb_service_dir=$(SERVICE_DIR) \
 	--define kb_sphinx_port=$(SPHINX_PORT) --define kb_sphinx_host=$(SPHINX_HOST) \
 	--define kb_starman_workers=$(STARMAN_WORKERS) \
-	--define kb_starman_max_requests=$(STARMAN_MAX_REQUESTS)
+	--define kb_starman_max_requests=$(STARMAN_MAX_REQUESTS) \
+	--define vigor_reference_db_directory=$(VIGOR_REFERENCE_DB_DIRECTORY) \
+	--define viral_family_db=$(VIRAL_FAMILY_DB)
 
 all: build-libs bin 
 
 build-libs:
-	$(PERL) build-taxon-map.pl  vigor-taxon-map.txt VigorTaxonMap.pm.tt lib/Bio/P3/GenomeAnnotationApp/VigorTaxonMap.pm
+	mkdir -p lib/Bio/BVBRC/ViralAnnotation
+	$(TPAGE) $(TPAGE_BUILD_ARGS) $(TPAGE_ARGS) Config.pm.tt > lib/Bio/BVBRC/ViralAnnotation/Config.pm
+	$(PERL) build-taxon-map.pl  vigor-taxon-map.txt VigorTaxonMap.pm.tt lib/Bio/BVBRC/ViralAnnotation/VigorTaxonMap.pm
 
 bin: $(BIN_PERL) $(BIN_SERVICE_PERL)
 
 deploy: deploy-all
 deploy-all: deploy-client 
-deploy-client: deploy-libs deploy-scripts deploy-docs
+deploy-client: build-libs deploy-libs deploy-scripts deploy-docs
 
-deploy-service: deploy-libs deploy-scripts deploy-service-scripts deploy-specs
+deploy-service: build-libs deploy-libs deploy-scripts deploy-service-scripts deploy-specs
 
 deploy-specs:
 	mkdir -p $(TARGET)/services/$(APP_SERVICE)
