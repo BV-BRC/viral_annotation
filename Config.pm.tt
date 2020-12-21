@@ -1,0 +1,10 @@
+package Bio::BVBRC::ViralAnnotation::Config;
+
+use constant	    vigor_reference_db_directory => '[% vigor_reference_db_directory %]';
+use constant	    viral_family_db => '[% viral_family_db %]';
+
+use base 'Exporter';
+our @EXPORT_OK = qw(vigor_reference_db_directory viral_family_db);
+our %EXPORT_TAGS = (all => [@EXPORT_OK]);
+1;
+
