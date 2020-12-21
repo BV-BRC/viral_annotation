@@ -154,7 +154,7 @@ if (open(my $pep_fh, "<", "$here/vigor_out.pep"))
 	}
 	elsif ($def =~ s/^pseudogene\s+//)
 	{
-	    ($ctg) = $id =~ /^(.*)\.[^.]+\.[^.]+$/;
+	    ($ctg) = $id =~ /^(.*)\.[^.]+$/;
 	    $type = 'pseudogene';
 	}
 	else
