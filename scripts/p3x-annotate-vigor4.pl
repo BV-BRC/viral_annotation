@@ -25,6 +25,7 @@ my($opt, $usage) = describe_options("%c %o",
 				    ["remove-existing" => "Remove existing CDS and mat_peptide features if vigor4 run is successful"],	
 				    ["input|i=s" => "Input file"],
 				    ["output|o=s" => "Output file"],
+				    ["threads|j=i" => "Limit vigor to this many threads", { default => 1 }],
 				    ["debug|d" => "Enable debugging"],
 				    ["help|h" => "Show this help message"]);
 print($usage->text), exit 0 if $opt->help;
@@ -114,7 +115,10 @@ my @vigor_params = ("-i", $sequences_file,
 
 print STDERR Dumper(\@vigor_params);
 my $ok = run(["vigor4", @vigor_params],
-	     init => sub { chdir $tempdir; },
+	     init => sub {
+		 chdir $tempdir;
+		 $ENV{JAVA_OPTS} = "-XX:ActiveProcessorCount=" . $opt->threads;
+	     },
 	     ">", "$here/vigor4.stdout.txt",
 	     "2>", "$here/vigor4.stderr.txt");
 if (!$ok)
