@@ -120,9 +120,7 @@ my $cmd = "vipr_mat_peptide";
 my @params = ("-d", "$tempdir",
 	      "-i", "genome.gb");
 
-$ok = run([$cmd, @params],
-	   ">", "$tempdir/out.txt",
-	  "2>", "$tempdir/err.txt");
+$ok = run([$cmd, @params]);
 $ok or die "vipr_mat_peptide command '$cmd @params' failed: $?\n";
 
 #
