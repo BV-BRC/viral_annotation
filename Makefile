@@ -21,6 +21,8 @@ PROD_TESTS = $(wildcard t/prod-tests/*.t)
 STARMAN_WORKERS = 8
 STARMAN_MAX_REQUESTS = 100
 
+VIGOR_REFERENCE_DB_DIRECTORY = /disks/patric-common/runtime/vigor-4.1.20190809-121720-7fa683e/VIGOR_DB
+
 TPAGE_ARGS = --define kb_top=$(TARGET) --define kb_runtime=$(DEPLOY_RUNTIME) --define kb_service_name=$(SERVICE) \
 	--define kb_service_port=$(SERVICE_PORT) --define kb_service_dir=$(SERVICE_DIR) \
 	--define kb_sphinx_port=$(SPHINX_PORT) --define kb_sphinx_host=$(SPHINX_HOST) \
