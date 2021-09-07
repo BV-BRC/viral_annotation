@@ -18,7 +18,7 @@ use IPC::Run qw(run);
 use File::SearchPath qw(searchpath);
 
 my($opt, $usage) = describe_options("%c %o",
-				    ["remove-existing" => "Remove existing CDS and mat_peptide features if vipr_mat_peptide run is successful"],
+				    ["remove-existing" => "Remove existing mat_peptide features if vipr_mat_peptide run is successful"],
 				    ["input|i=s" => "Input file"],
 				    ["output|o=s" => "Output file"],
 				    ["debug|d" => "Enable debugging"],
@@ -93,7 +93,7 @@ $gto or die "Could not parse input gto\n";
     {
 	if ($f->{type} eq 'mat_peptide')
 	{
-	    if ($f->{feature_creation_event} eq $vigor_ae->{id})
+	    if ($f->{feature_creation_event} && $f->{feature_creation_event} eq $vigor_ae->{id})
 	    {
 		warn "Already annotated by vigor4. Skipping annotation\n";
 		$gto->destroy_to_file($opt->output);
@@ -193,7 +193,7 @@ while (my($id, $def, $seq) = read_next_fasta_seq(\*O))
 				    -location => $loc,
 				    -function => $vals{product},
 				    -annotator => $cmd,
-				    -annotation => "Add mature peptide from reference $vals{ref}",
+				    -annotation => "Add mature peptide propagated from reference $vals{ref} by vipr_mat_peptide",
 				    -analyis_event_id => $event_id,
 				    -protein_translation => $seq,
 				    -genbank_type => 'mat_peptide',
