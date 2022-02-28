@@ -14,3 +14,6 @@ veev_db	Alphaviruses	11019
 wnvII_db	West Nile Virus Lineage II	2421440
 wnvI_db	West Nile Virus Lineage I	2421439
 zikv_db	Zika Virus	64320
+hantaviridae_db	Hantaviridae	1980413
+nairoviridae_db	Nairoviridae	1980415
+peribunyaviridae_db	Peribunyaviridae	1980416
