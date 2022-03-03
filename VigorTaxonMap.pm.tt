@@ -6,4 +6,32 @@ our $map = {
 [% END -%]
 };
 
+=head2 find_vigor_reference
+
+Return the reference database id for the given taxon id, or undef if not found.
+    
+=cut
+
+sub find_vigor_reference
+{  
+    my($taxon, $api) = @_;
+
+    my @res = $api->query("taxonomy", ['eq', 'taxon_id', $taxon], ['select', 'taxon_name', 'lineage_ids', 'lineage_names']);
+    my $res = $res[0];
+    my $ids = $res->{lineage_ids};
+    my $names = $res->{lineage_names};
+    
+    for (my $i = $#$names; $i >= 0; $i--)
+    {
+	my $taxon = $ids->[$i];
+	my $name = $names->[$i];
+	my $db = $Bio::BVBRC::ViralAnnotation::VigorTaxonMap::map->{$taxon};
+	if ($db)
+	{
+	    return $db->{db};
+	}
+    }
+    return undef;
+}
+
 1;

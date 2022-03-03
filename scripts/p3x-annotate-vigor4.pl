@@ -58,22 +58,7 @@ if (!$reference_name)
     if ($taxon)
     {
 	my $api = P3DataAPI->new;
-	my @res = $api->query("taxonomy", ['eq', 'taxon_id', $taxon], ['select', 'taxon_name', 'lineage_ids', 'lineage_names']);
-	my $res = $res[0];
-	my $ids = $res->{lineage_ids};
-	my $names = $res->{lineage_names};
-	
-	for (my $i = $#$names; $i >= 0; $i--)
-	{
-	    my $taxon = $ids->[$i];
-	    my $name = $names->[$i];
-	    my $db = $Bio::BVBRC::ViralAnnotation::VigorTaxonMap::map->{$taxon};
-	    if ($db)
-	    {
-		$reference_name = $db->{db};
-		last;
-	    }
-	}
+	$reference_name = Bio::BVBRC::ViralAnnotation::VigorTaxonMap::find_vigor_reference($taxon, $api);
 	if (!$reference_name)
 	{
 	    warn "No reference found for taxon $taxon\n";
