@@ -208,7 +208,7 @@ if (open(my $pep_fh, "<", "$here/vigor_out.pep"))
 	    warn "No location for feature $def " . Dumper($feature);
 	}
     }
-    #print Dumper(\%features);
+    # print Dumper(BEFORE => \%features);
 
     #
     # If we have features, remove any existing CDS or mat_peptide features.
@@ -220,6 +220,7 @@ if (open(my $pep_fh, "<", "$here/vigor_out.pep"))
 	print STDERR "Delete @to_del\n";
 	$genome_in->delete_feature($_) foreach @to_del;
     }
+    # print Dumper(AFTER => $genome_in);
     
     for my $type (keys %features)
     {
