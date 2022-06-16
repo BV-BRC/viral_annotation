@@ -17,3 +17,8 @@ zikv_db	Zika Virus	64320
 hantaviridae_db	Hantaviridae	1980413
 nairoviridae_db	Nairoviridae	1980415
 peribunyaviridae_db	Peribunyaviridae	1980416
+sarbe_db	Sarbecovirus	2509511
+nobeco_db	Nobecovirus	2509502
+hibeco_db	Hibecovirus	2509486
+embe_db	Embecovirus	2509481
+merbe_db	Merbecovirus	2509494
