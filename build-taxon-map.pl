@@ -21,7 +21,7 @@ while (<M>)
 {
     if (/^(\S+)_db\t([^\t]+)\t(\d+)$/)
     {
-	push(@map, { db => $1, name => $2, taxon => $3 });
+	push(@map, { db => "${1}_db", name => $2, taxon => $3 });
     }
 }
 close(M);
