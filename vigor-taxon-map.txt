@@ -22,3 +22,4 @@ nobeco_db	Nobecovirus	2509502
 hibeco_db	Hibecovirus	2509486
 embe_db	Embecovirus	2509481
 merbe_db	Merbecovirus	2509494
+monkeypox_db	Monkeypox Virus	10244
