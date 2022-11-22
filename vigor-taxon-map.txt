@@ -23,3 +23,22 @@ hibeco_db	Hibecovirus	2509486
 embe_db	Embecovirus	2509481
 merbe_db	Merbecovirus	2509494
 monkeypox_db	Monkeypox Virus	10244
+beidivirus_txid2501981_db	Beidivirus	2501981
+coguvirus_txid2560118_db	Coguvirus	2560118
+dengue_txid12637_db	Dengue virus	12637
+entovirus_txid2733257_db	Entovirus	2733257
+goukovirus_txid1980420_db	Goukovirus	1980420
+horwuvirus_txid2501976_db	Horwuvirus	2501976
+hudivirus_txid2501977_db	Hudivirus	2501977
+hudovirus_txid2501978_db	Hudovirus	2501978
+ixovirus_txid2733258_db	Ixovirus	2733258
+laulavirus_txid2560166_db	Laulavirus	2560166
+lentinuvirus_txid2733259_db	Lentinuvirus	2733259
+mobuvirus_txid2501979_db	Mobuvirus	2501979
+phasivirus_txid1980421_db	Phasivirus	1980421
+phlebovirus_txid11584_db	Phlebovirus	11584
+pidchovirus_txid2501975_db	Pidchovirus	2501975
+rubodvirus_txid2733260_db	Rubodvirus	2733260
+tenuivirus_txid12329_db	Tenuivirus	12329
+uukuvirus_txid2734594_db	Uukuvirus	2734594
+wenrivirus_txid2560254_db	Wenrivirus	2560254
