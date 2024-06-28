@@ -69,3 +69,7 @@ With a normal genome, one would do following:
    - For each mat_peptide, identify with genome accession (with version), CDS id, reference sequence accession, DNA location in genome, AA location in polyprotein, gene symbol, and product name
 6. save the annotated mat_peptide:
    - Save the annotation in fasta for database loading. May also save updated genbank to file for other purpose
+
+### References
+
+Larsen CN, Sun G, Li X, Zaremba S, Zhao H, He S, Zhou L, Kumar S, Desborough V, Klem EB. Mat_peptide: comprehensive annotation of mature peptides from polyproteins in five virus families. Bioinformatics. 2020 Mar 1;36(5):1627-1628. doi: 10.1093/bioinformatics/btz777. PMID: 31609421; PMCID: PMC8215913.
