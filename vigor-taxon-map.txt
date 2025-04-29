@@ -21,6 +21,7 @@ sarbe_db	Sarbecovirus	2509511
 nobeco_db	Nobecovirus	2509502
 hibeco_db	Hibecovirus	2509486
 embe_db	Embecovirus	2509481
+measles_db	Morbillivirus hominis	3052345
 merbe_db	Merbecovirus	2509494
 monkeypox_db	Monkeypox Virus	10244
 beidivirus_txid2501981_db	Beidivirus	2501981
