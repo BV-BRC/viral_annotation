@@ -50,25 +50,58 @@ $genome_in or die "Error reading and parsing input";
 # Otherwise get the taxon id from --taxon parameter or from the GTO.
 #
 
-my $reference_name = $opt->reference;
+#
+# Metadata accumulated for the analysis event we write below. Every value is
+# stringified on the way out; metadata is a mapping<string, string> in the
+# GenomeAnnotation spec, so a consumer never has to care whether a count arrived
+# as a number or a string, and JSON round-trips it identically either way.
+#
+my %meta = ( input_contigs => scalar @{$genome_in->{contigs}} );
 
-if (!$reference_name)
+my $reference_name = $opt->reference;
+my $reference_source;
+my $taxon;
+
+if ($reference_name)
 {
-    my $taxon = $opt->taxon // $genome_in->taxonomy_id;
+    $reference_source = 'option';
+}
+else
+{
+    $taxon = $opt->taxon // $genome_in->taxonomy_id;
     if ($taxon)
     {
 	my $api = P3DataAPI->new;
 	$reference_name = Bio::BVBRC::ViralAnnotation::VigorTaxonMap::find_vigor_reference($taxon, $api);
-	if (!$reference_name)
+	if ($reference_name)
+	{
+	    $reference_source = 'taxon_map';
+	}
+	else
 	{
 	    warn "No reference found for taxon $taxon\n";
 	}
     }
 }
 
+$meta{taxon}            = $taxon            if $taxon;
+$meta{reference_name}   = $reference_name   if $reference_name;
+$meta{reference_source} = $reference_source if $reference_source;
+
 if (!$reference_name)
 {
     warn "No reference found\n";
+
+    #
+    # Record the run even though we are not going to do anything. Without an event
+    # here, a no-reference run is indistinguishable from the stage never having been
+    # scheduled at all -- which is exactly the distinction a pipeline condition
+    # gating a downstream stage needs to make.
+    #
+    $meta{status} = 'no_reference';
+    my($event) = make_event($genome_in, []);
+    finish_event($event, \%meta, 0);
+
     $genome_in->destroy_to_file($opt->output);
     exit 0;
 }
@@ -106,22 +139,40 @@ my $ok = run(["vigor4", @vigor_params],
 	     },
 	     ">", "$here/vigor4.stdout.txt",
 	     "2>", "$here/vigor4.stderr.txt");
+my $vigor_rc = $?;
+
+#
+# Report the exit code, not the raw wait status -- $? is 768 for an exit(3), which
+# is needlessly confusing to whoever reads this metadata.
+#
+$meta{exit_code} = $vigor_rc >> 8;
+$meta{signal}    = $vigor_rc & 127 if $vigor_rc & 127;
+
 if (!$ok)
 {
-    print STDERR "Vigor run failed with rc=$?. Stdout:\n";
+    print STDERR "Vigor run failed with rc=$vigor_rc. Stdout:\n";
     copy("$here/vigor4.stdout.txt", \*STDERR);
     print STDERR "Stderr:\n";
     copy("$here/vigor4.stderr.txt", \*STDERR);
 }
     
-my $event = {
-    tool_name => "vigor4",
-    execution_time => scalar gettimeofday,
-    parameters => \@vigor_params,
-    hostname => $hostname,
-};
+my($event, $event_id) = make_event($genome_in, \@vigor_params);
 
-my $event_id = $genome_in->add_analysis_event($event);
+#
+# "Success" is the question a caller actually has: did this run produce an
+# annotation? Not "did the process exit 0" -- vigor can exit non-zero and still
+# leave a parseable .pep -- and not "does the GTO have features", which is true of
+# any GTO that arrived carrying GenBank features.
+#
+$meta{status} = $ok ? 'ok' : 'vigor_failed';
+
+#
+# Always report all three counts, including the zeroes. A reference database for a
+# non-polyprotein virus (influenza, rotavirus, RSV, the Bunyavirales genus dbs)
+# legitimately yields no mature peptides, and a condition downstream has to be able
+# to tell that from "vigor4 never reported". An absent key cannot say it.
+#
+my %counts = (CDS => 0, mat_peptide => 0, pseudogene => 0);
 
 #
 # Parse the generated peptide file. We collect the CDS and mature_peptides, then
@@ -218,6 +269,7 @@ if (open(my $pep_fh, "<", "$here/vigor_out.pep"))
     {
 	my @to_del = $genome_in->fids_of_type('CDS', 'mat_peptide', 'pseudogene');
 	print STDERR "Delete @to_del\n";
+	$meta{removed_existing} = scalar @to_del;
 	$genome_in->delete_feature($_) foreach @to_del;
     }
     # print Dumper(AFTER => $genome_in);
@@ -227,6 +279,8 @@ if (open(my $pep_fh, "<", "$here/vigor_out.pep"))
 	my $feats = $features{$type};
 	my $n = @$feats;
 	my $id_type = $type;
+
+	$counts{$type} = $n;
 	
 	for my $feature (@$feats)
 	{
@@ -252,6 +306,49 @@ if (open(my $pep_fh, "<", "$here/vigor_out.pep"))
 else
 {
     warn "Could not read $here/vigor_out.pep\n";
+    $meta{status} = 'no_pep_file';
 }
 
+my $features_called = 0;
+for my $type (sort keys %counts)
+{
+    $meta{"${type}_called"} = $counts{$type};
+    $features_called += $counts{$type};
+}
+$meta{features_called} = $features_called;
+
+finish_event($event, \%meta, $features_called);
+
 $genome_in->destroy_to_file($opt->output);
+
+#
+# Create the analysis event and register it with the GTO.
+#
+# add_analysis_event stores the hashref we hand it rather than a copy, so the event
+# is registered up front -- the features we add need its id -- and success and
+# metadata are filled in by finish_event() below, once there is something to
+# report. The change is reflected in the GTO that gets written.
+#
+sub make_event
+{
+    my($gto, $params) = @_;
+
+    my $event = {
+	tool_name => "vigor4",
+	execution_time => scalar gettimeofday,
+	parameters => $params,
+	hostname => $hostname,
+    };
+
+    my $event_id = $gto->add_analysis_event($event);
+
+    return($event, $event_id);
+}
+
+sub finish_event
+{
+    my($event, $meta, $success) = @_;
+
+    $event->{success} = $success ? 1 : 0;
+    $event->{metadata} = { map { $_ => "$meta->{$_}" } grep { defined $meta->{$_} } keys %$meta };
+}
