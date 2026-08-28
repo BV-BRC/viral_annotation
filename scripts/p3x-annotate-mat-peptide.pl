@@ -75,30 +75,20 @@ $gto or die "Could not parse input gto\n";
     $gto_for_gb or die "Could not parse input gto\n";
 
     #
-    # Check for vigor4 features.
+    # Whether it is worth running at all -- whether some upstream annotator has
+    # already called the mature peptides -- is decided by the pipeline, via a
+    # condition on this stage in the recipe's workflow.wf. It is not decided here:
+    # a guard in this script is invisible to whoever reads the recipe, and testing
+    # for the presence of mat_peptide features cannot distinguish peptides an
+    # annotator called in this run from peptides that merely arrived with a GenBank
+    # import.
     #
-    my $vigor_ae;
-    for my $ae ($gto_for_gb->analysis_events)
-    {
-	if ($ae->{tool_name} eq 'vigor4')
-	{
-	    $vigor_ae = $ae;
-	    last;
-	}
-    }
-
     my @to_del;
 
     for my $f ($gto_for_gb->features)
     {
 	if ($f->{type} eq 'mat_peptide')
 	{
-	    if ($f->{feature_creation_event} && $f->{feature_creation_event} eq $vigor_ae->{id})
-	    {
-		warn "Already annotated by vigor4. Skipping annotation\n";
-		$gto->destroy_to_file($opt->output);
-		exit 0;
-	    }
 	    push(@to_del, $f->{id});
 	}
     }
